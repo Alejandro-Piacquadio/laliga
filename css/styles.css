@@ -37,6 +37,7 @@ footer {
   color: white;
   padding: 10px;
   margin: 0;
+  height: 10vh;
 }
 
 .grid-container {
@@ -155,4 +156,8 @@ img {
   .site-header .logo-img {
     max-height: 48px;
   }
+}
+
+.section-login{
+  height: 90vh;
 }

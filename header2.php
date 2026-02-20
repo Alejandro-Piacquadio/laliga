@@ -11,7 +11,7 @@
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="index.php">Equipos</a></li>
                 <li><a class="dropdown-item" href="jugadores.php">Jugadores</a></li>
-                <li><a class="dropdown-item" href="#">Registro</a></li>
+                <li><a class="dropdown-item" href="registro.php">Registro</a></li>
             </ul>
         </div>
     </div>

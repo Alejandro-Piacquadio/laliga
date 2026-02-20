@@ -14,4 +14,4 @@ if ($resultado->num_rows>0){
 } else {
     die("El usuario no existe o el password es incorrecto");
 }
-?>
+?>2 
