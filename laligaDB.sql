@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 01, 2025 at 05:13 PM
+-- Generation Time: Feb 27, 2026 at 08:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -258,11 +258,11 @@ INSERT INTO `jugadores` (`id`, `nombre`, `equipo_id`, `goles`, `salario`, `posic
 (170, 'Jhon Solís', 20, 0, 0.2, 'centrocampista', 'Colombia', 20, ''),
 (171, 'David López', 20, 0, 3.8, 'defensa', 'España', 36, ''),
 (172, 'Daley Blind', 20, 0, 1.8, 'defensa', 'Países Bajos', 35, ''),
-(173, 'Arnau Martínez ', 20, 0, 1.2, 'defensa', 'España', 22, ''),
+(173, 'Arnau Martínez        ', 20, 0, 1.2, 'defensa', 'España', 22, ''),
 (174, 'Cristhian Stuani', 20, 0, 1.1, 'delantero', 'Uruguay', 38, ''),
 (175, 'Viktor Tsygankov', 20, 0, 1.4, 'delantero', 'Ucrania', 27, ''),
 (176, 'cristian Portu', 20, 0, 1.8, 'delantero', 'España', 33, ''),
-(177, 'Joel Roca ', 20, 0, 0.3, 'delantero ', 'España', 20, ''),
+(177, 'Joel Roca        ', 20, 0, 0.3, 'delantero ', 'España', 20, ''),
 (178, 'Eric García', 20, 0, 0.3, 'defensa', 'España', 24, ''),
 (179, 'Miguel Gutiérrez', 20, 0, 0.3, 'defensa', 'España', 24, ''),
 (180, 'Yan Couto', 20, 0, 0.2, 'defensa', 'Brasil', 23, ''),
@@ -402,6 +402,27 @@ INSERT INTO `jugadores` (`id`, `nombre`, `equipo_id`, `goles`, `salario`, `posic
 (314, 'Chidera Ejuke', 13, 0, 1.0, 'Extremo Izquierdo', 'Nigeria', 27, ''),
 (315, 'Isaac Romero', 13, 0, 0.3, 'Delantero Centro', 'España', 25, '');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `plan` enum('gratis','5','10') NOT NULL DEFAULT 'gratis',
+  `equipo_favorito_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `usuarios`
+--
+
+INSERT INTO `usuarios` (`id`, `email`, `password`, `plan`, `equipo_favorito_id`) VALUES
+(2, 'test@test.com', '123456', '5', 8);
+
 --
 -- Indexes for dumped tables
 --
@@ -421,6 +442,14 @@ ALTER TABLE `jugadores`
   ADD KEY `equipo_id` (`equipo_id`);
 
 --
+-- Indexes for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_usuario_equipo` (`equipo_favorito_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -437,6 +466,12 @@ ALTER TABLE `jugadores`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=316;
 
 --
+-- AUTO_INCREMENT for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -445,6 +480,12 @@ ALTER TABLE `jugadores`
 --
 ALTER TABLE `jugadores`
   ADD CONSTRAINT `jugadores_ibfk_1` FOREIGN KEY (`equipo_id`) REFERENCES `equipos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `fk_usuario_equipo` FOREIGN KEY (`equipo_favorito_id`) REFERENCES `equipos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

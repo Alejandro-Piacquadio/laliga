@@ -1,3 +1,12 @@
+<?php
+require_once "header2.php";
+
+if (!isset($_SESSION['usuario'])) {
+    header("Location: login.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +20,6 @@
 
 <body>
     <?php
-    require_once "header2.php";
     require_once "conexion.php";
 
     $id = isset($_GET['id']) ? $_GET['id'] : "";

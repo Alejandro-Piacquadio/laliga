@@ -1,38 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+require_once "header2.php";
+require_once "conexion.php";
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiki Data</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-</head>
+if (!isset($_SESSION['usuario'])) {
+    echo "<div class='container mt-4 hero'>
+    <div class='custom-banner p-5 text-center'>
+        <h1 class='fw-bold mb-3'>Bienvenido a <span class='nombre-banner'>Tiki-Data</span></h1>
+        <p class='lead mb-4'>
+            Explora todos los equipos y jugadores de LaLiga.
+            Inicia sesión para acceder a toda la información.
+        </p>
 
-<body>
-    <?php
-    require_once "header2.php";
+        <div class='d-flex justify-content-center gap-3'>
+            <a href='login.php' class='btn btn-dark px-4'>Iniciar sesión</a>
+            <a href='registro.php' class='btn btn-dark btn-lgr px-4'>Registrarse</a>
+        </div>
+    </div>
+</div>";
+} else {
+    echo "<div class='container mt-4 hero-lgin'>
+    <div class='dashboard-banner p-4'>
+        <div class='row align-items-center'>
+            
+            <div class='col-md-8'>
+                <h2 class='fw-bold mb-2'>
+                    Hola
+                </h2>
+                <p class='mb-3'>
+                    Bienvenido de nuevo. Explora equipos y jugadores de LaLiga.
+                </p>
 
-    require_once "conexion.php";
-    $orden = "SELECT id, nombre, escudo FROM equipos";
-    $resultado = $con->query($orden);
-    if ($resultado->num_rows > 0) {
+                <a href='equipos.php' class='btn btn-lgr me-2'>Ver equipos</a>
+                <a href='jugadores.php' class='btn btn-outline-dark'>Ver jugadores</a>
+            </div>
 
-        echo "<div class='grid-container'>";
+            <div class='col-md-4 text-md-end mt-3 mt-md-0'>
+                <div class='mini-stats'>
+                    <div><strong>20</strong> Equipos</div>
+                    <div><strong>315</strong> Jugadores</div>
+                </div>
+            </div>
 
-        while ($fila = $resultado->fetch_assoc()) {
-            echo "<a class='aa' href='jugadores.php?id=$fila[id]'><div class='tarjeta-equipo'>
-            <div class='escudo'><img src='img/$fila[escudo]' alt='Logo $fila[nombre]'></div>
-            <div class='equipo link_logo'>$fila[nombre]</div>
-            </div></a>";
-        }
-        echo "</div>";
-    }
-
-
-
-    require_once "footer.php";
-    ?>
-</body>
-
-</html>
+        </div>
+    </div>
+</div>";
+}
+require_once "footer.php";
+?>
