@@ -1,13 +1,15 @@
 <?php
-require_once "conexion.php";
-$email = $_POST['email'];
-$password = $_POST['password'];
-$plan = $_POST['plan'];
-$equipo = $_POST['equipo_favorito'];
+// require_once "conexion.php";
+// $email = $_POST['email'];
+// $password = $_POST['password'];
+// $plan = $_POST['plan'];
+// $equipo = $_POST['equipo_favorito'];
 
-$sql = "INSERT INTO usuarios (email, password, plan, equipo_favorito_id) VALUES ('$email', '$password', '$plan', '$equipo')";
-$con->query($sql);
-$con->close();
+// $sql = "INSERT INTO usuarios (email, password, plan, equipo_favorito_id) VALUES (?, ?, ?, ?)";
+// $consulta=$con->prepare($sql);
+// $consulta->bind_param('ssss', $email, $password, $plan, $equipo);
+// $consulta->execute();
+// $con->close();
 
-header("Location:index.php")
+// header("Location:index.php")
 ?>

@@ -1,6 +1,9 @@
+<head>
+    <title>Tiki-Data</title>
+</head>
 <?php
-require_once "header2.php";
 require_once "conexion.php";
+require_once "header2.php";
 
 if (!isset($_SESSION['usuario'])) {
     echo "<div class='container mt-4 hero'>
