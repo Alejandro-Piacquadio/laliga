@@ -7,12 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $password = trim($_POST['password']);
   $plan = trim($_POST['plan']);
   $equipo = trim($_POST['equipo_favorito']);
+  $hash = password_hash($password, PASSWORD_DEFAULT);
 
   $sql = "INSERT INTO usuarios (email, password, plan, equipo_favorito_id)
             VALUES (?, ?, ?, ?)";
 
   $consulta = $con->prepare($sql);
-  $consulta->bind_param('ssss', $email, $password, $plan, $equipo);
+  $consulta->bind_param('ssss', $email, $hash, $plan, $equipo);
   $consulta->execute();
   $con->close();
 
@@ -22,8 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $sql_equipos = "SELECT id, nombre FROM equipos";
 $resultado = $con->query($sql_equipos);
 ?>
+
 <head>
-    <title>Registro</title>
+  <title>Registro</title>
 </head>
 <section class="auth-section">
   <div class="auth-card">

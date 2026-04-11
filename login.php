@@ -11,22 +11,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($email === "" || $password === "") {
         $error = "Todos los campos son obligatorios.";
     } else {
-        $sql = "SELECT * FROM usuarios WHERE email = ? AND password = ?";
+        $sql = "SELECT id, password FROM usuarios WHERE email = ?";
         $consulta = $con->prepare($sql);
-        $consulta->bind_param("ss", $email, $password);
+        $consulta->bind_param("s", $email);
         $consulta->execute();
         $resultado = $consulta->get_result();
 
         if ($resultado->num_rows > 0) {
-            $_SESSION["usuario"] = $email;
-            header("Location: index.php");
+            $dato = $resultado->fetch_assoc();
+            $passwordHasheado = $dato['password'];
+            if (password_verify($password, $passwordHasheado)) {
+                $_SESSION["usuario"] = $email;
+                header("Location: index.php");
+                exit;
+            } else {
+                $error = "El usuario no existe o el password es incorrecto.";
+            }
         } else {
             $error = "El usuario no existe o el password es incorrecto.";
         }
     }
+    $consulta->close();
+    $con->close();
 }
 
 ?>
+
 <head>
     <title>Login</title>
 </head>
@@ -36,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <h1 class="auth-title">Iniciar sesión</h1>
 
         <?php if ($error !== ""): ?>
-            <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+            <p style="color:red;"><?php htmlspecialchars($error) ?></p>
         <?php endif; ?>
 
         <form class="auth-form" action="" method="post">
