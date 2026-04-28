@@ -1,7 +1,12 @@
 <?php
-require_once "conexion.php";
-require_once "header2.php";
+require_once "../conexion.php";
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+?>
+<link rel="stylesheet" href="/css/styles.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
+<?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = trim($_POST['email']);
   $password = trim($_POST['password']);
@@ -15,9 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $consulta = $con->prepare($sql);
   $consulta->bind_param('ssss', $email, $hash, $plan, $equipo);
   $consulta->execute();
-  $con->close();
 
-  header("Location:index.php");
+  $_SESSION['usuario'] = $email;
+  header("Location: /index.php");
+  exit;
 }
 
 $sql_equipos = "SELECT id, nombre FROM equipos";
@@ -29,9 +35,9 @@ $resultado = $con->query($sql_equipos);
 </head>
 <section class="auth-section">
   <div class="auth-card">
-    <img src="img/logoheader.png" alt="" class="logo2">
+    <img src="/img/logoheader.png" alt="" class="logo2">
     <h1 class="auth-title">Registro</h1>
-    <form class="auth-form" action="registro.php" method="post">
+    <form class="auth-form" action="/auth/registro.php" method="post">
       <input type="email" name="email" placeholder="Email" autocomplete="email" required>
       <input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
       <select name="plan" required>
@@ -46,9 +52,9 @@ $resultado = $con->query($sql_equipos);
         <?php endwhile; ?>
       </select>
       <input type="submit" value="Registrarse">
-      <p>¿Ya estás registrado? <a href="login.php">Inicia sesión</a></p>
+      <p>¿Ya estás registrado? <a href="/auth/login.php">Inicia sesión</a></p>
     </form>
   </div>
 </section>
 
-<?php require_once "footer.php"; ?>
+<?php require_once "../footer.php"; ?>

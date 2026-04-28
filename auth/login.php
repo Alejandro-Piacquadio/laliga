@@ -1,7 +1,12 @@
 <?php
-require_once "conexion.php";
-require_once "header2.php";
+require_once "../conexion.php";
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+?>
+<link rel="stylesheet" href="/css/styles.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
+<?php
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -22,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $passwordHasheado = $dato['password'];
             if (password_verify($password, $passwordHasheado)) {
                 $_SESSION["usuario"] = $email;
-                header("Location: index.php");
+                header("Location: /index.php");
                 exit;
             } else {
                 $error = "El usuario no existe o el password es incorrecto.";
@@ -42,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <section class="auth-section">
     <div class="auth-card">
-        <img src="img/logoheader.png" alt="" class="logo2">
+        <img src="/img/logoheader.png" alt="" class="logo2">
         <h1 class="auth-title">Iniciar sesión</h1>
 
         <?php if ($error !== ""): ?>
@@ -53,11 +58,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <input type="email" name="email" placeholder="Email" autocomplete="email">
             <input type="password" name="password" placeholder="Password" autocomplete="current-password">
             <input type="submit" value="Entrar">
-            <p>No estás registrado? <a href="registro.php">Regístrate</a></p>
+            <p>No estás registrado? <a href="/auth/registro.php">Regístrate</a></p>
         </form>
     </div>
 </section>
 
 <?php
-require_once "footer.php";
+require_once "../footer.php";
 ?>

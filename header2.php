@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $isLogged = isset($_SESSION['usuario']);
 ?>
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="/css/styles.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
@@ -16,21 +16,21 @@ $isLogged = isset($_SESSION['usuario']);
                 <img src="img/menu.png" alt="Menu" class="menu-icon">
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="index.php">Inicio</a></li>
+                <li><a class="dropdown-item" href="/index.php">Inicio</a></li>
                 <?php if ($isLogged): ?>
-                <li><a class="dropdown-item" href="equipos.php">Equipos</a></li>
-                <li><a class="dropdown-item" href="jugadores.php">Jugadores</a></li>
-                <li><a class="dropdown-item" href="clasificacion.php">Clasificación</a></li>
-                <li><a class="dropdown-item" href="logout.php">Cerrar Sesión</a></li>
+                <li><a class="dropdown-item" href="/equipos.php">Equipos</a></li>
+                <li><a class="dropdown-item" href="/jugadores.php">Jugadores</a></li>
+                <li><a class="dropdown-item" href="/clasificacion.php">Clasificación</a></li>
+                <li><a class="dropdown-item" href="/auth/logout.php">Cerrar Sesión</a></li>
                 <?php else: ?>
-                <li><a class="dropdown-item" href="login.php">Login</a></li>
-                <li><a class="dropdown-item" href="registro.php">Registro</a></li>
+                <li><a class="dropdown-item" href="/auth/login.php">Login</a></li>
+                <li><a class="dropdown-item" href="/auth/registro.php">Registro</a></li>
                 <?php endif; ?>
             </ul>
         </div>
     </div>
 
     <div class="logo">
-        <a href="index.php"><img src="img/logoheader.png" alt="Logo" class="logo-img"></a>
+        <a href="/index.php"><img src="/img/logoheader.png" alt="Logo" class="logo-img"></a>
     </div>
 </header>

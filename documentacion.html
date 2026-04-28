@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Documentación Tiki-Data</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --text: #e6e6e6;
+    --muted: #9aa3b2;
+    --accent: #ff4757;
+    --accent2: #ffa502;
+    --code-bg: #0b0d12;
+    --border: #232732;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); margin: 0;
+    display: grid; grid-template-columns: 280px 1fr;
+  }
+  nav.toc {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    background: var(--panel); padding: 24px 16px; border-right: 1px solid var(--border);
+  }
+  nav.toc h2 { color: var(--accent); font-size: 18px; margin: 0 0 12px; }
+  nav.toc a {
+    display: block; color: var(--muted); text-decoration: none;
+    padding: 6px 8px; border-radius: 4px; font-size: 14px; margin-bottom: 2px;
+  }
+  nav.toc a:hover { background: #222631; color: var(--text); }
+  nav.toc .group { color: var(--accent2); font-size: 12px; text-transform: uppercase;
+    margin: 14px 8px 4px; letter-spacing: 0.5px; }
+  main { padding: 40px 56px; max-width: 1100px; }
+  h1 { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+  h2 { color: var(--accent2); margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--border); }
+  h3 { color: #fff; margin-top: 28px; }
+  p, li { line-height: 1.6; color: #cfd3dc; }
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px;
+    color: #ffb347; font-family: "SF Mono", Menlo, monospace; font-size: 13px; }
+  pre { background: var(--code-bg); padding: 16px; border-radius: 6px;
+    overflow-x: auto; border: 1px solid var(--border); }
+  pre code { background: none; padding: 0; color: #e6e6e6; font-size: 13px; line-height: 1.5; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 12px; font-weight: 600; margin-right: 6px; }
+  .badge.ok { background: #1b4332; color: #95d5b2; }
+  .badge.warn { background: #4d3a00; color: #ffd166; }
+  .file-card { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px 24px; margin: 16px 0 32px; }
+  .file-card .path { color: var(--muted); font-size: 13px; font-family: "SF Mono", monospace; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+  th { background: var(--code-bg); color: var(--accent2); }
+  .step { background: #1c2129; padding: 12px 16px; border-left: 3px solid var(--accent2);
+    margin: 8px 0; border-radius: 0 4px 4px 0; }
+  .step strong { color: var(--accent2); }
+  .arch { font-family: "SF Mono", monospace; background: var(--code-bg);
+    padding: 16px; border-radius: 6px; color: #95d5b2; white-space: pre; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav class="toc">
+  <h2>Tiki-Data</h2>
+  <a href="#intro">Introducción</a>
+  <a href="#arquitectura">Arquitectura</a>
+  <a href="#flujo">Flujo de la app</a>
+  <a href="#bd">Base de datos</a>
+
+  <div class="group">Núcleo</div>
+  <a href="#conexion">conexion.php</a>
+  <a href="#header2">header2.php</a>
+  <a href="#footer">footer.php</a>
+  <a href="#index">index.php</a>
+
+  <div class="group">Auth</div>
+  <a href="#login">auth/login.php</a>
+  <a href="#registro">auth/registro.php</a>
+  <a href="#logout">auth/logout.php</a>
+
+  <div class="group">Páginas</div>
+  <a href="#equipos">equipos.php</a>
+  <a href="#jugadores">jugadores.php</a>
+  <a href="#clasificacion">clasificacion.php</a>
+
+  <div class="group">Home (parciales)</div>
+  <a href="#stats">home/stats.php</a>
+  <a href="#topequipos">home/top_equipos.php</a>
+  <a href="#topgoleadores">home/top_goleadores.php</a>
+
+  <div class="group">Otros</div>
+  <a href="#sql">laliga.sql</a>
+  <a href="#css">css/styles.css</a>
+  <a href="#seguridad">Seguridad</a>
+</nav>
+
+<main>
+
+<h1 id="intro">Tiki-Data — Documentación completa</h1>
+<p>
+  <span class="badge ok">PHP 8.5</span>
+  <span class="badge ok">MariaDB 10.4</span>
+  <span class="badge ok">Bootstrap 5.3</span>
+  <span class="badge ok">Sin frameworks</span>
+</p>
+<p>
+  <strong>Tiki-Data</strong> es una aplicación web de estadísticas de LaLiga.
+  Permite a los usuarios registrarse, iniciar sesión y consultar equipos, jugadores,
+  goleadores y la clasificación general de la liga.
+  Está construida con PHP procedural, MariaDB y Bootstrap, sin frameworks.
+</p>
+
+<h2 id="arquitectura">Arquitectura</h2>
+<div class="arch">laliga-main/
+├── conexion.php          ← conexión MySQLi a la BD
+├── header2.php           ← cabecera + menú compartido
+├── footer.php            ← footer + JS de Bootstrap
+├── index.php             ← dashboard (home)
+│
+├── auth/
+│   ├── login.php         ← formulario login
+│   ├── registro.php      ← formulario alta usuario
+│   └── logout.php        ← destruye sesión
+│
+├── equipos.php           ← grid de los 20 equipos
+├── jugadores.php         ← lista de jugadores (filtra por equipo)
+├── clasificacion.php     ← top 10 equipos por goles
+│
+├── home/                 ← parciales que include index.php
+│   ├── stats.php         ← contadores (equipos, jugadores, goles…)
+│   ├── top_equipos.php   ← podio con los 3 equipos más goleadores
+│   └── top_goleadores.php← top 3 pichichis
+│
+├── css/styles.css        ← estilos custom
+├── img/                  ← escudos, logo, iconos
+├── js/                   ← JS auxiliar
+└── laliga.sql            ← dump de estructura + datos</div>
+
+<h2 id="flujo">Flujo de la aplicación</h2>
+<div class="step"><strong>1.</strong> El usuario entra en <code>/index.php</code>.</div>
+<div class="step"><strong>2.</strong> Si no hay sesión activa → redirección a <code>/auth/login.php</code>.</div>
+<div class="step"><strong>3.</strong> El usuario inicia sesión o se registra (<code>auth/registro.php</code>).</div>
+<div class="step"><strong>4.</strong> Tras autenticarse, se guarda <code>$_SESSION['usuario']</code> y vuelve a <code>index.php</code>.</div>
+<div class="step"><strong>5.</strong> El dashboard muestra estadísticas, top de equipos y top de goleadores (parciales en <code>home/</code>).</div>
+<div class="step"><strong>6.</strong> Desde el menú puede navegar a <code>equipos.php</code>, <code>jugadores.php</code> o <code>clasificacion.php</code>.</div>
+<div class="step"><strong>7.</strong> <code>auth/logout.php</code> cierra sesión y vuelve a <code>index.php</code>.</div>
+
+<h2 id="bd">Base de datos</h2>
+<p>BD: <code>laliga</code> (MariaDB). Tres tablas principales:</p>
+<table>
+  <tr><th>Tabla</th><th>Campos clave</th><th>Descripción</th></tr>
+  <tr><td><code>equipos</code></td><td>id, nombre, escudo</td><td>20 equipos de LaLiga.</td></tr>
+  <tr><td><code>jugadores</code></td><td>id, nombre, posicion, goles, equipo_id</td><td>314 jugadores con su equipo y goles.</td></tr>
+  <tr><td><code>usuarios</code></td><td>id, email, password, plan, equipo_favorito_id</td><td>Cuentas registradas.</td></tr>
+</table>
+
+<!-- ============================================================= -->
+<h2>Núcleo</h2>
+
+<div class="file-card" id="conexion">
+  <h3>conexion.php</h3>
+  <div class="path">/conexion.php</div>
+  <p>Define las credenciales y abre una conexión MySQLi global <code>$con</code> que el resto de archivos reutilizan.</p>
+<pre><code>&lt;?php
+define('servidor', 'localhost');
+define('usuario', 'root');
+define('password', '');
+define('baseDeDatos', 'laliga');
+$con = new mysqli(servidor, usuario, password, baseDeDatos);
+?&gt;</code></pre>
+  <p><strong>Paso a paso:</strong></p>
+  <div class="step"><strong>1.</strong> <code>define()</code> crea constantes con la configuración (host, usuario, contraseña, BD).</div>
+  <div class="step"><strong>2.</strong> <code>new mysqli(...)</code> abre la conexión y la asigna a <code>$con</code>, que estará disponible en cualquier archivo que haga <code>require_once "conexion.php"</code>.</div>
+</div>
+
+<div class="file-card" id="header2">
+  <h3>header2.php</h3>
+  <div class="path">/header2.php</div>
+  <p>Cabecera compartida: arranca la sesión, carga CSS de Bootstrap y los estilos propios, y pinta el menú desplegable. Los enlaces cambian según si el usuario está logueado.</p>
+<pre><code>&lt;?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$isLogged = isset($_SESSION['usuario']);
+?&gt;
+&lt;link rel="stylesheet" href="/css/styles.css"&gt;
+&lt;link href="https://cdn.jsdelivr.net/.../bootstrap.min.css" rel="stylesheet"&gt;
+
+&lt;header class="site-header"&gt;
+  &lt;div class="dropdown"&gt;
+    &lt;button data-bs-toggle="dropdown"&gt;&lt;img src="img/menu.png"&gt;&lt;/button&gt;
+    &lt;ul class="dropdown-menu"&gt;
+      &lt;li&gt;&lt;a href="/index.php"&gt;Inicio&lt;/a&gt;&lt;/li&gt;
+      &lt;?php if ($isLogged): ?&gt;
+        &lt;li&gt;&lt;a href="/equipos.php"&gt;Equipos&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/jugadores.php"&gt;Jugadores&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/clasificacion.php"&gt;Clasificación&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/auth/logout.php"&gt;Cerrar Sesión&lt;/a&gt;&lt;/li&gt;
+      &lt;?php else: ?&gt;
+        &lt;li&gt;&lt;a href="/auth/login.php"&gt;Login&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/auth/registro.php"&gt;Registro&lt;/a&gt;&lt;/li&gt;
+      &lt;?php endif; ?&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;div class="logo"&gt;&lt;a href="/index.php"&gt;&lt;img src="/img/logoheader.png"&gt;&lt;/a&gt;&lt;/div&gt;
+&lt;/header&gt;</code></pre>
+  <div class="step"><strong>1.</strong> <code>session_start()</code> sólo si no hay sesión iniciada.</div>
+  <div class="step"><strong>2.</strong> <code>$isLogged</code> indica si <code>$_SESSION['usuario']</code> existe.</div>
+  <div class="step"><strong>3.</strong> Carga CSS propio + Bootstrap CDN.</div>
+  <div class="step"><strong>4.</strong> Pinta el botón hamburguesa y el menú desplegable con enlaces condicionales.</div>
+  <div class="step"><strong>Nota:</strong> en <code>auth/login.php</code> y <code>auth/registro.php</code> NO se incluye este archivo (se cargan sólo los CSS), para que no aparezca el menú.</div>
+</div>
+
+<div class="file-card" id="footer">
+  <h3>footer.php</h3>
+  <div class="path">/footer.php</div>
+  <p>Footer común y carga del JS de Bootstrap (necesario para que funcione el dropdown del menú).</p>
+<pre><code>&lt;footer&gt;&copy; 2025&lt;/footer&gt;
+&lt;script src="https://cdn.jsdelivr.net/.../bootstrap.bundle.min.js"&gt;&lt;/script&gt;</code></pre>
+</div>
+
+<div class="file-card" id="index">
+  <h3>index.php</h3>
+  <div class="path">/index.php</div>
+  <p>Es la página principal. Verifica que haya sesión, saluda al usuario y carga los tres parciales del home.</p>
+<pre><code>&lt;?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: /auth/login.php");
+    exit();
+}
+require_once "conexion.php";
+require_once "header2.php";
+?&gt;
+&lt;main class="home-main"&gt;
+  &lt;section class="hero-new hero-new--logged"&gt;
+    &lt;h1&gt;Hola, &lt;?php echo htmlspecialchars(explode('@', $_SESSION['usuario'])[0]); ?&gt;&lt;/h1&gt;
+    &lt;a href="equipos.php"&gt;Ver equipos&lt;/a&gt;
+    ...
+  &lt;/section&gt;
+
+  &lt;?php require "home/stats.php"; ?&gt;
+  &lt;?php require "home/top_equipos.php"; ?&gt;
+  &lt;?php require "home/top_goleadores.php"; ?&gt;
+&lt;/main&gt;
+&lt;?php require_once "footer.php"; ?&gt;</code></pre>
+  <div class="step"><strong>1.</strong> Comprueba sesión <em>antes</em> de imprimir nada (importante para que el <code>header()</code> de redirección funcione).</div>
+  <div class="step"><strong>2.</strong> Incluye <code>conexion.php</code> y <code>header2.php</code>.</div>
+  <div class="step"><strong>3.</strong> Pinta hero con saludo personalizado: extrae la parte antes del <code>@</code> del email.</div>
+  <div class="step"><strong>4.</strong> Incluye los tres parciales del directorio <code>home/</code>, que reutilizan <code>$con</code>.</div>
+  <div class="step"><strong>5.</strong> Cierra con el footer común.</div>
+</div>
+
+<!-- ============================================================= -->
+<h2>Auth</h2>
+
+<div class="file-card" id="login">
+  <h3>auth/login.php</h3>
+  <div class="path">/auth/login.php</div>
+  <p>Formulario de inicio de sesión. Verifica credenciales con <code>password_verify()</code> y guarda el email en <code>$_SESSION</code>.</p>
+<pre><code>&lt;?php
+require_once "../conexion.php";
+if (session_status() === PHP_SESSION_NONE) session_start();
+?&gt;
+&lt;link rel="stylesheet" href="/css/styles.css"&gt;
+&lt;link href="https://cdn.jsdelivr.net/.../bootstrap.min.css" rel="stylesheet"&gt;
+
+&lt;?php
+$error = "";
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $email = trim($_POST["email"]);
+    $password = trim($_POST["password"]);
+
+    if ($email === "" || $password === "") {
+        $error = "Todos los campos son obligatorios.";
+    } else {
+        $sql = "SELECT id, password FROM usuarios WHERE email = ?";
+        $consulta = $con->prepare($sql);
+        $consulta->bind_param("s", $email);
+        $consulta->execute();
+        $resultado = $consulta->get_result();
+
+        if ($resultado->num_rows > 0) {
+            $dato = $resultado->fetch_assoc();
+            if (password_verify($password, $dato['password'])) {
+                $_SESSION["usuario"] = $email;
+                header("Location: /index.php");
+                exit;
+            } else {
+                $error = "El usuario no existe o el password es incorrecto.";
+            }
+        } else {
+            $error = "El usuario no existe o el password es incorrecto.";
+        }
+    }
+}
+?&gt;
+&lt;section class="auth-section"&gt;
+  &lt;div class="auth-card"&gt;
+    &lt;h1&gt;Iniciar sesión&lt;/h1&gt;
+    &lt;?php if ($error): ?&gt;&lt;p style="color:red;"&gt;&lt;?= htmlspecialchars($error) ?&gt;&lt;/p&gt;&lt;?php endif; ?&gt;
+    &lt;form method="post"&gt;
+      &lt;input type="email" name="email"&gt;
+      &lt;input type="password" name="password"&gt;
+      &lt;input type="submit" value="Entrar"&gt;
+    &lt;/form&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+  <div class="step"><strong>1.</strong> Carga la conexión y arranca sesión.</div>
+  <div class="step"><strong>2.</strong> Carga sólo los CSS (no el header), para que en esta pantalla no aparezca el menú.</div>
+  <div class="step"><strong>3.</strong> Si la petición es POST: limpia los inputs con <code>trim()</code>.</div>
+  <div class="step"><strong>4.</strong> Usa una <em>prepared statement</em> (<code>?</code> + <code>bind_param</code>) → previene SQL injection.</div>
+  <div class="step"><strong>5.</strong> Compara contraseña con <code>password_verify()</code> contra el hash guardado.</div>
+  <div class="step"><strong>6.</strong> Si todo OK → <code>$_SESSION['usuario'] = $email</code> y redirige a <code>/index.php</code>. Si no, muestra error escapado con <code>htmlspecialchars</code>.</div>
+</div>
+
+<div class="file-card" id="registro">
+  <h3>auth/registro.php</h3>
+  <div class="path">/auth/registro.php</div>
+  <p>Alta de nuevos usuarios. Hashea la contraseña con <code>password_hash()</code> antes de insertarla, y rellena el desplegable de equipo favorito desde la BD.</p>
+<pre><code>&lt;?php
+require_once "../conexion.php";
+if (session_status() === PHP_SESSION_NONE) session_start();
+?&gt;
+&lt;link rel="stylesheet" href="/css/styles.css"&gt;
+&lt;link href="https://cdn.jsdelivr.net/.../bootstrap.min.css" rel="stylesheet"&gt;
+
+&lt;?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $email    = trim($_POST['email']);
+  $password = trim($_POST['password']);
+  $plan     = trim($_POST['plan']);
+  $equipo   = trim($_POST['equipo_favorito']);
+  $hash     = password_hash($password, PASSWORD_DEFAULT);
+
+  $sql = "INSERT INTO usuarios (email, password, plan, equipo_favorito_id)
+          VALUES (?, ?, ?, ?)";
+  $consulta = $con->prepare($sql);
+  $consulta->bind_param('ssss', $email, $hash, $plan, $equipo);
+  $consulta->execute();
+
+  header("Location: /index.php");
+  exit;
+}
+
+$resultado = $con->query("SELECT id, nombre FROM equipos");
+?&gt;
+&lt;form method="post" action="/auth/registro.php"&gt;
+  &lt;input type="email" name="email" required&gt;
+  &lt;input type="password" name="password" required&gt;
+  &lt;select name="plan"&gt;
+    &lt;option value="gratis"&gt;Plan Gratis&lt;/option&gt;
+    &lt;option value="5"&gt;Plan 5EUR&lt;/option&gt;
+    &lt;option value="10"&gt;Plan 10EUR&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;select name="equipo_favorito"&gt;
+    &lt;?php while ($f = $resultado->fetch_assoc()): ?&gt;
+      &lt;option value="&lt;?= $f['id'] ?&gt;"&gt;&lt;?= htmlspecialchars($f['nombre']) ?&gt;&lt;/option&gt;
+    &lt;?php endwhile; ?&gt;
+  &lt;/select&gt;
+  &lt;input type="submit" value="Registrarse"&gt;
+&lt;/form&gt;</code></pre>
+  <div class="step"><strong>1.</strong> Si POST: recoge email, password, plan, equipo_favorito.</div>
+  <div class="step"><strong>2.</strong> <code>password_hash($password, PASSWORD_DEFAULT)</code> crea un hash bcrypt seguro.</div>
+  <div class="step"><strong>3.</strong> <code>INSERT INTO usuarios</code> con prepared statement (4 strings).</div>
+  <div class="step"><strong>4.</strong> <code>header("Location: /index.php"); exit;</code> redirige tras crear el usuario.</div>
+  <div class="step"><strong>5.</strong> Si no es POST: hace un <code>SELECT</code> de equipos para llenar el desplegable de equipo favorito.</div>
+</div>
+
+<div class="file-card" id="logout">
+  <h3>auth/logout.php</h3>
+  <div class="path">/auth/logout.php</div>
+<pre><code>&lt;?php
+session_start();
+$_SESSION = [];
+session_destroy();
+header("Location: /index.php");
+exit();
+?&gt;</code></pre>
+  <div class="step"><strong>1.</strong> Reinicia sesión, vacía el array, destruye la sesión, redirige a <code>index.php</code>.</div>
+  <div class="step"><strong>2.</strong> Como <code>index.php</code> exige sesión, automáticamente reenvía a <code>login.php</code>.</div>
+</div>
+
+<!-- ============================================================= -->
+<h2>Páginas internas</h2>
+
+<div class="file-card" id="equipos">
+  <h3>equipos.php</h3>
+  <div class="path">/equipos.php</div>
+  <p>Muestra una rejilla con los 20 equipos. Cada tarjeta enlaza a <code>jugadores.php?id=&lt;equipo&gt;</code>.</p>
+<pre><code>&lt;?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: /auth/login.php");
+    exit();
+}
+require_once "header2.php";
+?&gt;
+&lt;?php
+require_once "conexion.php";
+$resultado = $con->query("SELECT id, nombre, escudo FROM equipos");
+echo "&lt;div class='grid-container'&gt;";
+while ($fila = $resultado->fetch_assoc()) {
+    $id     = (int)$fila['id'];
+    $nombre = htmlspecialchars($fila['nombre']);
+    $escudo = htmlspecialchars($fila['escudo']);
+    echo "&lt;a href='jugadores.php?id={$id}'&gt;
+            &lt;img src='img/{$escudo}'&gt;
+            &lt;div&gt;{$nombre}&lt;/div&gt;
+          &lt;/a&gt;";
+}
+echo "&lt;/div&gt;";
+require_once "footer.php";
+?&gt;</code></pre>
+  <div class="step"><strong>1.</strong> Comprueba sesión <em>antes</em> de imprimir HTML, así <code>header()</code> funciona correctamente.</div>
+  <div class="step"><strong>2.</strong> Incluye <code>header2.php</code> (con menú).</div>
+  <div class="step"><strong>3.</strong> Consulta los 20 equipos.</div>
+  <div class="step"><strong>4.</strong> Pinta cada equipo como tarjeta clicable hacia <code>jugadores.php?id=N</code>. Datos escapados con <code>htmlspecialchars</code> y <code>(int)</code>.</div>
+</div>
+
+<div class="file-card" id="jugadores">
+  <h3>jugadores.php</h3>
+  <div class="path">/jugadores.php</div>
+  <p>Lista jugadores. Si recibe <code>?id=N</code>, filtra por equipo; si no, los muestra todos.</p>
+<pre><code>&lt;?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: /auth/login.php");
+    exit();
+}
+require_once "header2.php";
+?&gt;
+&lt;?php
+require_once "conexion.php";
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($id === 0) {
+    $jugadores = $con->query("SELECT nombre, posicion FROM jugadores");
+} else {
+    $stmt = $con->prepare("SELECT nombre, posicion FROM jugadores WHERE equipo_id = ?");
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $jugadores = $stmt->get_result();
+}
+
+while ($fila = $jugadores->fetch_assoc()) {
+    echo "&lt;div class='tarjeta-equipo'&gt;
+            &lt;img src='img/unknow.webp'&gt;
+            &lt;div&gt;" . htmlspecialchars($fila['nombre']) . "&lt;/div&gt;
+            &lt;div&gt;" . htmlspecialchars($fila['posicion']) . "&lt;/div&gt;
+          &lt;/div&gt;";
+}
+?&gt;</code></pre>
+  <div class="step"><strong>1.</strong> Comprueba sesión.</div>
+  <div class="step"><strong>2.</strong> <code>$id = (int)$_GET['id']</code> casteo a entero → primera barrera contra SQL injection.</div>
+  <div class="step"><strong>3.</strong> Si <code>$id = 0</code>: query directa de todos los jugadores. Si no: prepared statement con <code>bind_param('i', $id)</code>.</div>
+  <div class="step"><strong>4.</strong> Itera con <code>fetch_assoc()</code> y pinta cada jugador escapando datos con <code>htmlspecialchars</code>.</div>
+</div>
+
+<div class="file-card" id="clasificacion">
+  <h3>clasificacion.php</h3>
+  <div class="path">/clasificacion.php</div>
+  <p>Tabla con el top 10 de equipos según la suma de goles de sus jugadores.</p>
+<pre><code>&lt;?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: /auth/login.php");
+    exit();
+}
+require_once "conexion.php";
+
+$consulta = "
+    SELECT e.id, e.nombre, COALESCE(SUM(j.goles), 0) AS goles_totales
+    FROM equipos e
+    LEFT JOIN jugadores j ON j.equipo_id = e.id
+    GROUP BY e.id, e.nombre
+    ORDER BY goles_totales DESC
+    LIMIT 10
+";
+$resultado = $con->query($consulta);
+?&gt;
+&lt;?php require_once "header2.php"; ?&gt;
+&lt;table class="table"&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Pos&lt;/th&gt;&lt;th&gt;Equipo&lt;/th&gt;&lt;th&gt;Goles&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;
+  &lt;?php $p = 1; while ($f = $resultado->fetch_assoc()): ?&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;?= $p++ ?&gt;&lt;/td&gt;&lt;td&gt;&lt;?= htmlspecialchars($f['nombre']) ?&gt;&lt;/td&gt;&lt;td&gt;&lt;?= (int)$f['goles_totales'] ?&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;?php endwhile; ?&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+  <div class="step"><strong>1.</strong> Sesión, conexión.</div>
+  <div class="step"><strong>2.</strong> Query con <code>LEFT JOIN</code> + <code>SUM(goles)</code> + <code>GROUP BY</code> + <code>ORDER BY DESC LIMIT 10</code>. <code>COALESCE(...,0)</code> garantiza 0 si un equipo no tiene jugadores.</div>
+  <div class="step"><strong>3.</strong> Renderiza tabla Bootstrap con un contador <code>$p</code> para la columna posición.</div>
+</div>
+
+<!-- ============================================================= -->
+<h2>Parciales del Home</h2>
+<p>Estos archivos no se ejecutan solos: los incluye <code>index.php</code> tras haber abierto la conexión <code>$con</code>.</p>
+
+<div class="file-card" id="stats">
+  <h3>home/stats.php</h3>
+  <div class="path">/home/stats.php</div>
+<pre><code>&lt;?php
+$res = $con->query("SELECT COUNT(*) AS n FROM equipos");
+$totalEquipos = (int)$res->fetch_assoc()['n'];
+
+$res = $con->query("SELECT COUNT(*) AS n FROM jugadores");
+$totalJugadores = (int)$res->fetch_assoc()['n'];
+
+$res = $con->query("SELECT COALESCE(SUM(goles),0) AS n FROM jugadores");
+$totalGoles = (int)$res->fetch_assoc()['n'];
+?&gt;
+&lt;section class="stats-grid"&gt;
+  &lt;div class="stat-card"&gt;&lt;?= $totalEquipos ?&gt; Equipos&lt;/div&gt;
+  &lt;div class="stat-card"&gt;&lt;?= $totalJugadores ?&gt; Jugadores&lt;/div&gt;
+  &lt;div class="stat-card"&gt;&lt;?= $totalGoles ?&gt; Goles&lt;/div&gt;
+  &lt;div class="stat-card"&gt;38 Jornadas&lt;/div&gt;
+&lt;/section&gt;</code></pre>
+  <div class="step">Tres consultas <code>COUNT</code>/<code>SUM</code> y pinta cuatro tarjetas resumen. Las jornadas son fijas (38).</div>
+</div>
+
+<div class="file-card" id="topequipos">
+  <h3>home/top_equipos.php</h3>
+  <div class="path">/home/top_equipos.php</div>
+<pre><code>&lt;?php
+$topEquipos = $con->query("
+    SELECT e.nombre, e.escudo, COALESCE(SUM(j.goles),0) AS goles
+    FROM equipos e
+    LEFT JOIN jugadores j ON j.equipo_id = e.id
+    GROUP BY e.id, e.nombre, e.escudo
+    ORDER BY goles DESC LIMIT 3
+");
+?&gt;
+&lt;section class="home-section"&gt;
+  &lt;h2&gt;Equipos más goleadores&lt;/h2&gt;
+  &lt;div class="cards-row"&gt;
+    &lt;?php $pos = 1; while ($e = $topEquipos->fetch_assoc()): ?&gt;
+      &lt;div class="podio-card podio-card--&lt;?= $pos ?&gt;"&gt;
+        #&lt;?= $pos ?&gt; &lt;?= htmlspecialchars($e['nombre']) ?&gt; — &lt;?= (int)$e['goles'] ?&gt; goles
+      &lt;/div&gt;
+    &lt;?php $pos++; endwhile; ?&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+  <div class="step">Saca los 3 equipos con más goles totales y los pinta como podio (clase distinta para 1.°, 2.°, 3.°).</div>
+</div>
+
+<div class="file-card" id="topgoleadores">
+  <h3>home/top_goleadores.php</h3>
+  <div class="path">/home/top_goleadores.php</div>
+<pre><code>&lt;?php
+$topGoleadores = $con->query("
+    SELECT j.nombre, j.goles, e.nombre AS equipo, e.escudo
+    FROM jugadores j
+    JOIN equipos e ON e.id = j.equipo_id
+    ORDER BY j.goles DESC LIMIT 3
+");
+?&gt;
+&lt;section class="home-section"&gt;
+  &lt;h2&gt;Pichichis de la temporada&lt;/h2&gt;
+  &lt;?php while ($j = $topGoleadores->fetch_assoc()): ?&gt;
+    &lt;div class="player-card"&gt;
+      &lt;?= htmlspecialchars($j['nombre']) ?&gt; (&lt;?= htmlspecialchars($j['equipo']) ?&gt;) — &lt;?= (int)$j['goles'] ?&gt; goles
+    &lt;/div&gt;
+  &lt;?php endwhile; ?&gt;
+&lt;/section&gt;</code></pre>
+  <div class="step">JOIN entre jugadores y equipos para sacar los 3 máximos goleadores con el nombre y escudo de su equipo.</div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="sql">laliga.sql</h2>
+<p>Volcado de la BD: <code>CREATE TABLE</code> de <code>equipos</code>, <code>jugadores</code> y <code>usuarios</code> + datos de los 20 equipos y 314 jugadores. Se importa con:</p>
+<pre><code>mysql -u root laliga &lt; laliga.sql</code></pre>
+
+<h2 id="css">css/styles.css</h2>
+<p>Hoja de estilos custom con clases para:</p>
+<ul>
+  <li><code>.site-header</code>, <code>.menu-btn</code>, <code>.dropdown-menu</code> — cabecera y menú.</li>
+  <li><code>.auth-section</code>, <code>.auth-card</code>, <code>.auth-form</code> — pantallas de login/registro.</li>
+  <li><code>.hero-new</code>, <code>.hero-new--logged</code> — hero del dashboard.</li>
+  <li><code>.stats-grid</code>, <code>.stat-card</code> — contadores del home.</li>
+  <li><code>.home-section</code>, <code>.cards-row</code> — secciones del home.</li>
+  <li><code>.podio-card</code>, <code>.podio-card--1/2/3</code> — podio de equipos top.</li>
+  <li><code>.player-card</code> — tarjetas de pichichis.</li>
+  <li><code>.grid-container</code>, <code>.tarjeta-equipo</code>, <code>.escudo</code> — rejillas de equipos/jugadores.</li>
+</ul>
+
+<!-- ============================================================= -->
+<h2 id="seguridad">Seguridad y prácticas aplicadas</h2>
+<table>
+  <tr><th>Riesgo</th><th>Mitigación</th></tr>
+  <tr><td>SQL Injection</td><td>Prepared statements con <code>bind_param</code> en login, registro y filtro por equipo. Casteo <code>(int)</code> en IDs.</td></tr>
+  <tr><td>XSS</td><td><code>htmlspecialchars()</code> en cualquier dato que se imprima desde BD o <code>$_SESSION</code>.</td></tr>
+  <tr><td>Contraseñas en claro</td><td><code>password_hash(..., PASSWORD_DEFAULT)</code> + <code>password_verify()</code> (bcrypt).</td></tr>
+  <tr><td>Acceso no autorizado</td><td>Comprobación de <code>$_SESSION['usuario']</code> al inicio de cada página protegida, antes de imprimir HTML.</td></tr>
+  <tr><td>Header already sent</td><td>Los <code>session_start</code> y comprobaciones de sesión se hacen antes de incluir <code>header2.php</code> (que emite HTML).</td></tr>
+  <tr><td>Sesiones residuales</td><td><code>logout.php</code> vacía y destruye la sesión.</td></tr>
+</table>
+
+<h2>Cómo arrancar en local</h2>
+<pre><code>brew services start mariadb
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS laliga"
+mysql -u root laliga &lt; laliga.sql
+cd "laliga-main"
+php -S localhost:8000</code></pre>
+<p>Abrir <a href="http://localhost:8000/index.php" style="color: var(--accent2);">http://localhost:8000/index.php</a>.</p>
+
+</main>
+</body>
+</html>

@@ -1,11 +1,12 @@
 <?php
-require_once "header2.php";
-
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['usuario'])) {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
+require_once "header2.php";
 ?>
 
 <!DOCTYPE html>
@@ -29,9 +30,12 @@ if (!isset($_SESSION['usuario'])) {
         echo "<div class='grid-container'>";
 
         while ($fila = $resultado->fetch_assoc()) {
-            echo "<a class='aa' href='jugadores.php?id=$fila[id]'><div class='tarjeta-equipo'>
-            <div class='escudo'><img src='img/$fila[escudo]' alt='Logo $fila[nombre]'></div>
-            <div class='equipo link_logo'>$fila[nombre]</div>
+            $id = (int)$fila['id'];
+            $nombre = htmlspecialchars($fila['nombre']);
+            $escudo = htmlspecialchars($fila['escudo']);
+            echo "<a class='aa' href='jugadores.php?id={$id}'><div class='tarjeta-equipo'>
+            <div class='escudo'><img src='img/{$escudo}' alt='Logo {$nombre}'></div>
+            <div class='equipo link_logo'>{$nombre}</div>
             </div></a>";
         }
         echo "</div>";
