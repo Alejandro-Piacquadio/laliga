@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <h1 class="auth-title">Iniciar sesión</h1>
 
         <?php if ($error !== ""): ?>
-            <p style="color:red;"><?php htmlspecialchars($error) ?></p>
+            <p style="color:red;"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
 
         <form class="auth-form" action="" method="post">

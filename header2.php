@@ -16,10 +16,11 @@ $isLogged = isset($_SESSION['usuario']);
                 <img src="img/menu.png" alt="Menu" class="menu-icon">
             </button>
             <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="index.php">Inicio</a></li>
                 <?php if ($isLogged): ?>
                 <li><a class="dropdown-item" href="equipos.php">Equipos</a></li>
                 <li><a class="dropdown-item" href="jugadores.php">Jugadores</a></li>
-                <li><a class="dropdown-item" href="posiciones.php">Posiciones</a></li>
+                <li><a class="dropdown-item" href="clasificacion.php">Clasificación</a></li>
                 <li><a class="dropdown-item" href="logout.php">Cerrar Sesión</a></li>
                 <?php else: ?>
                 <li><a class="dropdown-item" href="login.php">Login</a></li>
