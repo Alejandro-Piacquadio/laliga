@@ -22,34 +22,27 @@ if (!isset($_SESSION['usuario'])) {
     <?php
     require_once "conexion.php";
 
-    $id = isset($_GET['id']) ? $_GET['id'] : "";
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-    $todos = "SELECT nombre, posicion FROM jugadores";
-    $jugadores = $con->query($todos);
-    if ($id == "" and $jugadores->num_rows > 0) {
+    if ($id === 0) {
+        $jugadores = $con->query("SELECT nombre, posicion FROM jugadores");
+    } else {
+        $stmt = $con->prepare("SELECT nombre, posicion FROM jugadores WHERE equipo_id = ?");
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $jugadores = $stmt->get_result();
+    }
+
+    if ($jugadores && $jugadores->num_rows > 0) {
         echo "<div class='grid-container'>";
         while ($fila = $jugadores->fetch_assoc()) {
             echo "<div class='tarjeta-equipo'>
             <div class='escudo'><img src='img/unknow.webp'></div>
-            <div class='equipo link_logo'>$fila[nombre]</div>
-            <div class='posicion link_logo'>$fila[posicion]</div>
+            <div class='equipo link_logo'>" . htmlspecialchars($fila['nombre']) . "</div>
+            <div class='posicion link_logo'>" . htmlspecialchars($fila['posicion']) . "</div>
             </div>";
         }
         echo "</div>";
-    } elseif (!empty($id)) {
-        $porEquipo = "SELECT nombre, posicion FROM jugadores WHERE equipo_id = $id";
-        $resultado = $con->query($porEquipo);
-        if ($resultado->num_rows > 0) {
-            echo "<div class='grid-container'>";
-            while ($fila = $resultado->fetch_assoc()) {
-                echo "<div class='tarjeta-equipo'>
-                <div class='escudo'><img src='img/unknow.webp'></div>
-                <div class='equipo link_logo'>$fila[nombre]</div>
-                <div class='posicion link_logo'>$fila[posicion]</div>
-                </div>";
-            }
-            echo "</div>";
-        }
     }
 
     require_once "footer.php";

@@ -1,4 +1,13 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['usuario'])) {
+    header("Location: login.php");
+    exit();
+}
+
 require_once "conexion.php";
 require_once "header2.php";
 
@@ -45,43 +54,23 @@ $topGoleadores = $con->query("
 
 <main class="home-main">
 
-    <?php if (!isset($_SESSION['usuario'])): ?>
-        <section class="hero-new">
-            <div class="hero-new__overlay"></div>
-            <div class="hero-new__content">
-                <span class="hero-new__badge">Temporada 2025/26</span>
-                <h1 class="hero-new__title">
-                    Vive <span class="accent">LaLiga</span> como nunca
-                </h1>
-                <p class="hero-new__subtitle">
-                    Estadísticas, jugadores, equipos y la clasificación en tiempo real.
-                    Toda la información de LaLiga en un solo lugar.
-                </p>
-                <div class="hero-new__cta">
-                    <a href="login.php" class="btn-primary-new">Iniciar sesión</a>
-                    <a href="registro.php" class="btn-secondary-new">Crear cuenta</a>
-                </div>
+    <section class="hero-new hero-new--logged">
+        <div class="hero-new__overlay"></div>
+        <div class="hero-new__content">
+            <span class="hero-new__badge">Bienvenido de nuevo</span>
+            <h1 class="hero-new__title">
+                Hola, <span class="accent"><?php echo htmlspecialchars(explode('@', $_SESSION['usuario'])[0]); ?></span>
+            </h1>
+            <p class="hero-new__subtitle">
+                Explora todos los datos de LaLiga: equipos, jugadores y clasificación.
+            </p>
+            <div class="hero-new__cta">
+                <a href="equipos.php" class="btn-primary-new">Ver equipos</a>
+                <a href="jugadores.php" class="btn-secondary-new">Ver jugadores</a>
+                <a href="clasificacion.php" class="btn-secondary-new">Clasificación</a>
             </div>
-        </section>
-    <?php else: ?>
-        <section class="hero-new hero-new--logged">
-            <div class="hero-new__overlay"></div>
-            <div class="hero-new__content">
-                <span class="hero-new__badge">Bienvenido de nuevo</span>
-                <h1 class="hero-new__title">
-                    Hola, <span class="accent"><?php echo htmlspecialchars(explode('@', $_SESSION['usuario'])[0]); ?></span>
-                </h1>
-                <p class="hero-new__subtitle">
-                    Explora todos los datos de LaLiga: equipos, jugadores y clasificación.
-                </p>
-                <div class="hero-new__cta">
-                    <a href="equipos.php" class="btn-primary-new">Ver equipos</a>
-                    <a href="jugadores.php" class="btn-secondary-new">Ver jugadores</a>
-                    <a href="clasificacion.php" class="btn-secondary-new">Clasificación</a>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
+        </div>
+    </section>
 
     <section class="stats-grid">
         <div class="stat-card">
@@ -105,9 +94,7 @@ $topGoleadores = $con->query("
     <section class="home-section">
         <div class="home-section__head">
             <h2>Equipos más goleadores</h2>
-            <?php if (isset($_SESSION['usuario'])): ?>
-                <a href="clasificacion.php" class="link-more">Ver clasificación →</a>
-            <?php endif; ?>
+            <a href="clasificacion.php" class="link-more">Ver clasificación →</a>
         </div>
         <div class="cards-row">
             <?php
@@ -132,9 +119,7 @@ $topGoleadores = $con->query("
     <section class="home-section">
         <div class="home-section__head">
             <h2>Pichichis de la temporada</h2>
-            <?php if (isset($_SESSION['usuario'])): ?>
-                <a href="jugadores.php" class="link-more">Ver jugadores →</a>
-            <?php endif; ?>
+            <a href="jugadores.php" class="link-more">Ver jugadores →</a>
         </div>
         <div class="cards-row">
             <?php

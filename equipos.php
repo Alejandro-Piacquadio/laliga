@@ -21,8 +21,6 @@ if (!isset($_SESSION['usuario'])) {
 
 <body>
     <?php
-    require_once "header2.php";
-
     require_once "conexion.php";
     $orden = "SELECT id, nombre, escudo FROM equipos";
     $resultado = $con->query($orden);
