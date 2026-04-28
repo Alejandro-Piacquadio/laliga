@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $isLogged = isset($_SESSION['usuario']);
 ?>
@@ -17,6 +19,7 @@ $isLogged = isset($_SESSION['usuario']);
                 <?php if ($isLogged): ?>
                 <li><a class="dropdown-item" href="equipos.php">Equipos</a></li>
                 <li><a class="dropdown-item" href="jugadores.php">Jugadores</a></li>
+                <li><a class="dropdown-item" href="posiciones.php">Posiciones</a></li>
                 <li><a class="dropdown-item" href="logout.php">Cerrar Sesión</a></li>
                 <?php else: ?>
                 <li><a class="dropdown-item" href="login.php">Login</a></li>
