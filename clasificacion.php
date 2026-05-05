@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (!isset($_SESSION['usuario'])) {
-    header("Location: /auth/login.php");
+    header("Location: auth/login.php");
     exit();
 }
 
@@ -14,10 +14,11 @@ $consulta = "
     SELECT
         e.id,
         e.nombre,
+        e.escudo,
         COALESCE(SUM(j.goles), 0) AS goles_totales
     FROM equipos e
     LEFT JOIN jugadores j ON j.equipo_id = e.id
-    GROUP BY e.id, e.nombre
+    GROUP BY e.id, e.nombre, e.escudo
     ORDER BY goles_totales DESC
     LIMIT 10
 ";
@@ -32,6 +33,7 @@ $resultado = $con->query($consulta);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clasificación</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
@@ -58,7 +60,16 @@ $resultado = $con->query($consulta);
                             ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($posicion); ?></td>
-                                    <td><?php echo htmlspecialchars($fila['nombre']); ?></td>
+                                    <td>
+                                        <a class="classification-team-link" href="jugadores.php?id=<?php echo (int) $fila['id']; ?>">
+                                            <img
+                                                class="classification-team-logo"
+                                                src="img/<?php echo htmlspecialchars($fila['escudo']); ?>"
+                                                alt="Logo <?php echo htmlspecialchars($fila['nombre']); ?>"
+                                            >
+                                            <span><?php echo htmlspecialchars($fila['nombre']); ?></span>
+                                        </a>
+                                    </td>
                                     <td><?php echo htmlspecialchars($fila['goles_totales']); ?></td>
                                 </tr>
                             <?php

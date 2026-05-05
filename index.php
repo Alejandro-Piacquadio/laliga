@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (!isset($_SESSION['usuario'])) {
-    header("Location: /auth/login.php");
+    header("Location: auth/login.php");
     exit();
 }
 
@@ -16,6 +16,7 @@ require_once "header2.php";
 <head>
     <meta charset="UTF-8">
     <title>Tiki-Data — LaLiga</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 

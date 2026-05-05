@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 if (!isset($_SESSION['usuario'])) {
-    header("Location: /auth/login.php");
+    header("Location: auth/login.php");
     exit();
 }
 require_once "header2.php";
